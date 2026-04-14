@@ -235,6 +235,9 @@ function drawFakeGlow(ctx, x, y, radius, color, alpha) {
 function drawMoon(ctx, x, y, radius) {
     ctx.save();
     ctx.fillStyle = '#fdfdfd';
+    // Mond-Glow (schadet hier nicht, da nur 1x pro Frame)
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
     // Äußerer Kreis
     ctx.beginPath();
     ctx.arc(x, y, radius, 0.2 * Math.PI, 1.8 * Math.PI);
@@ -330,7 +333,7 @@ function update() {
     if (backgroundX <= -canvas.width) backgroundX = 0;
 
     // Tag-Nacht-Zeit weiterschalten (Asymmetrisch: Langsamer Nacht, schneller Tag)
-    let cycleSpeed = window.VIBE_CONFIG.dayNightCycleSpeed;
+    let cycleSpeed = 0.002;
     if (Math.cos(gameTime) > 0) {
         gameTime += cycleSpeed * 0.5; // Langsamerer Sonnenuntergang
     } else {
@@ -389,7 +392,12 @@ function draw() {
     
     // Nacht-Overlay (günstiges source-over statt teures 'multiply')
     if (nightFactor > 0.05) {
-        // Hintergrund-Sterne zeichnen (bevor das Overlay kommt)
+        ctx.globalAlpha = nightFactor * 0.85; // Tieferes Blau
+        ctx.fillStyle = 'rgb(10, 10, 60)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.globalAlpha = 1;
+
+        // Sterne und Mond ÜBER das Overlay zeichnen, damit sie hell leuchten
         if (nightFactor > 0.3) {
             ctx.save();
             ctx.globalAlpha = (nightFactor - 0.3) * 1.4;
@@ -402,11 +410,6 @@ function draw() {
             drawMoon(ctx, canvas.width - 100, 80, 40);
             ctx.restore();
         }
-
-        ctx.globalAlpha = nightFactor * 0.85; // Tieferes Blau
-        ctx.fillStyle = 'rgb(10, 10, 60)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.globalAlpha = 1;
 
         // Dämmerungs-Rötung
         if (nightFactor > 0.2 && nightFactor < 0.5) {
