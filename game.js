@@ -236,42 +236,30 @@ function drawCloud(ctx, x, y, width, height, alpha, nightFactor) {
     ctx.save();
     ctx.translate(x, y);
     
-    // Farbe basierend auf Tageszeit (Nachts dunkler/bläulicher)
-    const r = Math.floor(70 - 40 * nightFactor);
-    const g = Math.floor(70 - 40 * nightFactor);
-    const b = Math.floor(100 - 20 * nightFactor);
+    // Einfache, harmonische Farbe (Nachts etwas dunkler)
+    const baseVal = Math.floor(70 - 30 * nightFactor);
+    const color = `rgba(${baseVal}, ${baseVal}, ${baseVal + 20}, ${alpha})`;
     
-    // Wir zeichnen die Wolke aus vielen kleinen, weichen "Strichen"
-    for (let layer = 0; layer < 3; layer++) {
-        ctx.globalAlpha = alpha * (0.3 + layer * 0.2);
-        
-        // Zufällige Kreise für die fluffige Form
-        const seed = Math.floor(x / 100); // Konsistente Form pro Wolke
-        const circles = [
-            {x: 0, y: 0, r: height * 0.6},
-            {x: -width * 0.3, y: height * 0.1, r: height * 0.45},
-            {x: width * 0.3, y: height * 0.1, r: height * 0.45},
-            {x: -width * 0.15, y: -height * 0.2, r: height * 0.4},
-            {x: width * 0.15, y: -height * 0.2, r: height * 0.4}
-        ];
+    // Weicher Schatten für den Aquarell-Rand-Effekt
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = 'rgba(0,0,0,0.2)';
+    ctx.fillStyle = color;
 
-        circles.forEach((c, i) => {
-            const grad = ctx.createRadialGradient(c.x, c.y - c.r*0.2, 0, c.x, c.y, c.r);
-            // Highlights oben, dunkler unten
-            const topColor = `rgba(${r+40}, ${g+40}, ${b+60}, ${alpha})`;
-            const midColor = `rgba(${r}, ${g}, ${b}, ${alpha})`;
-            const bottomColor = `rgba(${r-20}, ${g-20}, ${b-10}, 0)`;
-            
-            grad.addColorStop(0, topColor);
-            grad.addColorStop(0.4, midColor);
-            grad.addColorStop(1, bottomColor);
-            
-            ctx.fillStyle = grad;
-            ctx.beginPath();
-            ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
-            ctx.fill();
-        });
-    }
+    // Eine einfache Form aus 4 überlappenden Kreisen
+    const circles = [
+        {x: 0, y: 0, r: height * 0.5},
+        {x: -width * 0.25, y: 0, r: height * 0.4},
+        {x: width * 0.25, y: 0, r: height * 0.4},
+        {x: 0, y: -height * 0.2, r: height * 0.35}
+    ];
+
+    ctx.beginPath();
+    circles.forEach(c => {
+        ctx.moveTo(c.x + c.r, c.y);
+        ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+    });
+    ctx.fill();
+    
     ctx.restore();
 }
 
