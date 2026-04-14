@@ -502,7 +502,9 @@ function draw() {
     stars.forEach(star => {
         const twinkle = window.VIBE_CONFIG.starTwinkle ? Math.sin(Date.now() / 200 + star.x) * 0.2 + 1 : 1;
         const r = (star.size / 2) * twinkle;
-        ctx.fillStyle = 'rgba(255, 245, 200, 0.6)';
+        ctx.fillStyle = 'rgba(255, 250, 210, 0.9)'; // Cremiger, deckender
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = 'white';
         ctx.globalAlpha = 1;
         drawStar(ctx, star.x, star.y, 5, r, r / 2);
     });
