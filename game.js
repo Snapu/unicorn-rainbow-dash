@@ -235,18 +235,20 @@ function drawFakeGlow(ctx, x, y, radius, color, alpha) {
 function drawMoon(ctx, x, y, radius) {
     ctx.save();
     ctx.translate(x, y);
-    ctx.rotate(-0.2); 
+    ctx.rotate(-0.3); // Schöne Schräglage
     
     ctx.fillStyle = '#FFF9C4'; 
-    ctx.shadowBlur = 20;
-    ctx.shadowColor = 'rgba(255, 250, 200, 0.4)';
+    ctx.shadowBlur = 25;
+    ctx.shadowColor = 'rgba(255, 250, 200, 0.5)';
 
     ctx.beginPath();
-    // Der Haupt-Kreis
-    ctx.arc(0, 0, radius, 0, Math.PI * 2, false);
-    // Der "Ausschneide"-Kreis (identischer Radius, leicht versetzt)
-    // Wir nutzen 'true' für anticlockwise, um die Fläche abzuziehen
-    ctx.arc(radius * 0.4, 0, radius, 0, Math.PI * 2, true);
+    // 1. Äußerer Bogen (von oben nach unten)
+    // Startet oben (1.5 PI) und geht bis unten (0.5 PI)
+    ctx.arc(0, 0, radius, 1.5 * Math.PI, 0.5 * Math.PI, true);
+    
+    // 2. Innere Kurve zurück zum Startpunkt
+    // Die Kurve zieht sich in die Mitte, um die Sichel zu bilden
+    ctx.quadraticCurveTo(radius * 0.7, 0, 0, -radius);
     
     ctx.fill();
     ctx.restore();
