@@ -38,7 +38,14 @@ let powerups = []; // Liste für Diamanten
 let particles = [];
 let backgroundX = 0;
 let gameTime = Math.PI * 1.5; 
-let turboTimer = 0; // Wie lange der Turbo noch hält
+let turboTimer = 0; 
+
+// Statische Deko-Sterne für die Nacht (Fixe Positionen)
+const staticStars = Array.from({ length: 50 }, () => ({
+    x: Math.random(),
+    y: Math.random() * 0.6, // Nur im oberen Bereich
+    size: 0.5 + Math.random() * 1.5
+}));
 
 // Initialisierung
 function init() {
@@ -225,6 +232,19 @@ function drawFakeGlow(ctx, x, y, radius, color, alpha) {
     ctx.fill();
 }
 
+function drawMoon(ctx, x, y, radius) {
+    ctx.save();
+    ctx.fillStyle = '#fdfdfd';
+    // Äußerer Kreis
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0.2 * Math.PI, 1.8 * Math.PI);
+    // Innerer Kreis (Crescent Effekt)
+    ctx.arc(x + radius * 0.5, y, radius * 0.9, 1.8 * Math.PI, 0.2 * Math.PI, true);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+}
+
 // --- RENDERING ---
 
 function update() {
@@ -369,15 +389,29 @@ function draw() {
     
     // Nacht-Overlay (günstiges source-over statt teures 'multiply')
     if (nightFactor > 0.05) {
-        ctx.globalAlpha = nightFactor * 0.65;
-        ctx.fillStyle = 'rgb(20, 20, 80)';
+        // Hintergrund-Sterne zeichnen (bevor das Overlay kommt)
+        if (nightFactor > 0.3) {
+            ctx.save();
+            ctx.globalAlpha = (nightFactor - 0.3) * 1.4;
+            ctx.fillStyle = 'white';
+            staticStars.forEach(s => {
+                ctx.beginPath();
+                ctx.arc(s.x * canvas.width, s.y * canvas.height, s.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            drawMoon(ctx, canvas.width - 100, 80, 40);
+            ctx.restore();
+        }
+
+        ctx.globalAlpha = nightFactor * 0.85; // Tieferes Blau
+        ctx.fillStyle = 'rgb(10, 10, 60)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.globalAlpha = 1;
 
         // Dämmerungs-Rötung
         if (nightFactor > 0.2 && nightFactor < 0.5) {
-            ctx.globalAlpha = (0.5 - nightFactor) * 0.35;
-            ctx.fillStyle = 'rgb(255, 100, 0)';
+            ctx.globalAlpha = (0.5 - nightFactor) * 0.4;
+            ctx.fillStyle = 'rgb(255, 80, 0)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.globalAlpha = 1;
         }
