@@ -232,6 +232,49 @@ function drawFakeGlow(ctx, x, y, radius, color, alpha) {
     ctx.fill();
 }
 
+function drawCloud(ctx, x, y, width, height, alpha, nightFactor) {
+    ctx.save();
+    ctx.translate(x, y);
+    
+    // Farbe basierend auf Tageszeit (Nachts dunkler/bläulicher)
+    const r = Math.floor(70 - 40 * nightFactor);
+    const g = Math.floor(70 - 40 * nightFactor);
+    const b = Math.floor(100 - 20 * nightFactor);
+    
+    // Wir zeichnen die Wolke aus vielen kleinen, weichen "Strichen"
+    for (let layer = 0; layer < 3; layer++) {
+        ctx.globalAlpha = alpha * (0.3 + layer * 0.2);
+        
+        // Zufällige Kreise für die fluffige Form
+        const seed = Math.floor(x / 100); // Konsistente Form pro Wolke
+        const circles = [
+            {x: 0, y: 0, r: height * 0.6},
+            {x: -width * 0.3, y: height * 0.1, r: height * 0.45},
+            {x: width * 0.3, y: height * 0.1, r: height * 0.45},
+            {x: -width * 0.15, y: -height * 0.2, r: height * 0.4},
+            {x: width * 0.15, y: -height * 0.2, r: height * 0.4}
+        ];
+
+        circles.forEach((c, i) => {
+            const grad = ctx.createRadialGradient(c.x, c.y - c.r*0.2, 0, c.x, c.y, c.r);
+            // Highlights oben, dunkler unten
+            const topColor = `rgba(${r+40}, ${g+40}, ${b+60}, ${alpha})`;
+            const midColor = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+            const bottomColor = `rgba(${r-20}, ${g-20}, ${b-10}, 0)`;
+            
+            grad.addColorStop(0, topColor);
+            grad.addColorStop(0.4, midColor);
+            grad.addColorStop(1, bottomColor);
+            
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    }
+    ctx.restore();
+}
+
 function drawMoon(ctx, x, y, radius) {
     ctx.save();
     ctx.translate(x, y);
@@ -474,38 +517,15 @@ function draw() {
         drawStar(ctx, star.x, star.y, 5, r, r / 2);
     });
 
-    // 4. Hindernisse (Gewitterwolken)
+    // 4. Hindernisse (Aquarell-Gewitterwolken)
     obstacles.forEach(obs => {
-        ctx.save();
-        ctx.translate(obs.x, obs.y);
-        
-        // Farbe basierend auf Turbo-Zustand (durchsichtig im Turbo)
         const alpha = turboTimer > 0 ? 0.3 : 0.8;
-        const mainColor = `rgba(74, 74, 100, ${alpha})`; // Leicht violett-grau
-        
-        // Schatten für Tiefe
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = 'rgba(0,0,0,0.5)';
-        
-        // Wir zeichnen eine 'fluffige' Wolke aus 6 Kreisen
-        ctx.fillStyle = mainColor;
-        const circles = [
-            {x: 0, y: 0, r: obs.height/2},
-            {x: -obs.width/3, y: 5, r: obs.height/2.5},
-            {x: obs.width/3, y: 5, r: obs.height/2.5},
-            {x: -obs.width/5, y: -obs.height/4, r: obs.height/3},
-            {x: obs.width/5, y: -obs.height/4, r: obs.height/3},
-            {x: 0, y: -obs.height/3, r: obs.height/2.8}
-        ];
-        
-        circles.forEach(c => {
-            ctx.beginPath();
-            ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
-            ctx.fill();
-        });
+        drawCloud(ctx, obs.x, obs.y, obs.width, obs.height, alpha, nightFactor);
         
         // Optionaler Blitz-Effekt (kurzes Flackern)
         if (Math.random() < 0.01) {
+            ctx.save();
+            ctx.translate(obs.x, obs.y);
             ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
             ctx.beginPath();
             ctx.moveTo(0, 0);
@@ -513,9 +533,8 @@ function draw() {
             ctx.lineTo(5, 20);
             ctx.lineTo(0, 50);
             ctx.fill();
+            ctx.restore();
         }
-        
-        ctx.restore();
     });
 
     // 5. Diamanten
