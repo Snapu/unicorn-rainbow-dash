@@ -251,56 +251,54 @@ function update() {
     const speedMult = turboTimer > 0 ? window.VIBE_CONFIG.turboSpeedMultiplier : 1;
 
     // Sterne aktualisieren & Kollision
-    stars.forEach((star, index) => {
+    stars.forEach(star => {
         star.x -= star.speed * speedMult;
-        
+
         if (gameState === 'PLAYING') {
-            const dx = (unicorn.x) - star.x;
-            const dy = (unicorn.y) - star.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            
-            if (distance < 100) {
-                stars.splice(index, 1);
-                score += (turboTimer > 0 ? 2 : 1); // Doppelte Punkte im Turbo!
+            const dx = unicorn.x - star.x;
+            const dy = unicorn.y - star.y;
+            if (Math.sqrt(dx * dx + dy * dy) < 100) {
+                star.collected = true;
+                score += (turboTimer > 0 ? 2 : 1);
                 scoreElement.innerText = score;
                 AudioEngine.playStarDing();
-                for(let i=0; i<15; i++) createParticle(star.x, star.y);
+                for (let i = 0; i < 15; i++) createParticle(star.x, star.y);
             }
         }
-        if (star.x < -100) stars.splice(index, 1);
     });
+    stars = stars.filter(s => !s.collected && s.x > -100);
 
     // Hindernisse aktualisieren & Kollision
-    obstacles.forEach((obs, index) => {
+    obstacles.forEach(obs => {
         obs.x -= obs.speed * speedMult;
 
-        if (gameState === 'PLAYING' && turboTimer <= 0) { // Unbesiegbar im Turbo!
-            if (unicorn.x + unicorn.width/3 > obs.x - obs.width/2 &&
-                unicorn.x - unicorn.width/3 < obs.x + obs.width/2 &&
-                unicorn.y + unicorn.height/3 > obs.y - obs.height/2 &&
-                unicorn.y - unicorn.height/3 < obs.y + obs.height/2) {
+        if (gameState === 'PLAYING' && turboTimer <= 0) {
+            if (unicorn.x + unicorn.width / 3 > obs.x - obs.width / 2 &&
+                unicorn.x - unicorn.width / 3 < obs.x + obs.width / 2 &&
+                unicorn.y + unicorn.height / 3 > obs.y - obs.height / 2 &&
+                unicorn.y - unicorn.height / 3 < obs.y + obs.height / 2) {
                 gameOver();
             }
         }
-        if (obs.x < -300) obstacles.splice(index, 1);
     });
+    obstacles = obstacles.filter(o => o.x > -300);
 
     // Diamanten aktualisieren & Kollision
-    powerups.forEach((p, index) => {
+    powerups.forEach(p => {
         p.x -= p.speed * speedMult;
+
         if (gameState === 'PLAYING') {
-            const dx = (unicorn.x) - p.x;
-            const dy = (unicorn.y) - p.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            if (distance < 100) {
-                powerups.splice(index, 1);
-                turboTimer = window.VIBE_CONFIG.turboDuration * 60; // 60 FPS
+            const dx = unicorn.x - p.x;
+            const dy = unicorn.y - p.y;
+            if (Math.sqrt(dx * dx + dy * dy) < 100) {
+                p.collected = true;
+                turboTimer = window.VIBE_CONFIG.turboDuration * 60;
                 AudioEngine.playTurboDing();
-                for(let i=0; i<30; i++) createParticle(p.x, p.y);
+                for (let i = 0; i < 30; i++) createParticle(p.x, p.y);
             }
         }
-        if (p.x < -100) powerups.splice(index, 1);
     });
+    powerups = powerups.filter(p => !p.collected && p.x > -100);
 
     // Hintergrund bewegen
     backgroundX -= window.VIBE_CONFIG.parallaxSpeed * speedMult;
@@ -344,12 +342,12 @@ function update() {
     createParticle(unicorn.x - (unicorn.width / 4), unicorn.y + (unicorn.height / 6));
 
     // Partikel aktualisieren
-    particles.forEach((p, index) => {
+    particles.forEach(p => {
         p.x += p.vx;
         p.y += p.vy;
         p.life -= p.decay;
-        if (p.life <= 0) particles.splice(index, 1);
     });
+    particles = particles.filter(p => p.life > 0);
 }
 
 function draw() {
