@@ -44,7 +44,8 @@ let turboTimer = 0;
 const staticStars = Array.from({ length: 50 }, () => ({
     x: Math.random(),
     y: Math.random() * 0.6, // Nur im oberen Bereich
-    size: 0.5 + Math.random() * 1.5
+    size: 0.3 + Math.random() * 1.2,
+    opacity: 0.1 + Math.random() * 0.2
 }));
 
 // Initialisierung
@@ -464,6 +465,7 @@ function draw() {
             ctx.globalAlpha = (nightFactor - 0.3) * 1.4;
             ctx.fillStyle = 'white';
             staticStars.forEach(s => {
+                ctx.globalAlpha = s.opacity;
                 ctx.beginPath();
                 ctx.arc(s.x * canvas.width, s.y * canvas.height, s.size, 0, Math.PI * 2);
                 ctx.fill();
@@ -500,7 +502,7 @@ function draw() {
     stars.forEach(star => {
         const twinkle = window.VIBE_CONFIG.starTwinkle ? Math.sin(Date.now() / 200 + star.x) * 0.2 + 1 : 1;
         const r = (star.size / 2) * twinkle;
-        ctx.fillStyle = '#ffeb3b';
+        ctx.fillStyle = 'rgba(255, 245, 200, 0.6)';
         ctx.globalAlpha = 1;
         drawStar(ctx, star.x, star.y, 5, r, r / 2);
     });
