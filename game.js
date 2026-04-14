@@ -200,23 +200,28 @@ function createParticle(x, y) {
 
 function drawStar(ctx, x, y, spikes, outerRadius, innerRadius) {
     let rot = Math.PI / 2 * 3;
-    let step = Math.PI / spikes;
-
+    const step = Math.PI / spikes;
     ctx.beginPath();
     ctx.moveTo(x, y - outerRadius);
     for (let i = 0; i < spikes; i++) {
-        let x1 = x + Math.cos(rot) * outerRadius;
-        let y1 = y + Math.sin(rot) * outerRadius;
-        ctx.lineTo(x1, y1);
+        ctx.lineTo(x + Math.cos(rot) * outerRadius, y + Math.sin(rot) * outerRadius);
         rot += step;
-
-        x1 = x + Math.cos(rot) * innerRadius;
-        y1 = y + Math.sin(rot) * innerRadius;
-        ctx.lineTo(x1, y1);
+        ctx.lineTo(x + Math.cos(rot) * innerRadius, y + Math.sin(rot) * innerRadius);
         rot += step;
     }
     ctx.lineTo(x, y - outerRadius);
     ctx.closePath();
+    ctx.fill();
+}
+
+// Schneller Glow via halbtransparenter Kreis (GPU-beschleunigt, kein shadowBlur!)
+function drawFakeGlow(ctx, x, y, radius, color, alpha) {
+    const grad = ctx.createRadialGradient(x, y, 0, x, y, radius);
+    grad.addColorStop(0, color.replace(')', `, ${alpha})`).replace('rgb', 'rgba'));
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
     ctx.fill();
 }
 
@@ -376,17 +381,13 @@ function draw() {
         }
     }
 
-    // Regenbogen-Schweif (Additive Blending = Teilchen leuchten zusammen)
+    // Regenbogen-Schweif ('lighter' Blending = GPU-beschleunigte Glow-Simulation)
     ctx.save();
     ctx.globalCompositeOperation = 'lighter';
-    // shadowBlur einmalig vor der Schleife setzen (statt für jeden Partikel!)
-    ctx.shadowBlur = nightFactor > 0.2 ? 20 * nightFactor * window.VIBE_CONFIG.nightGlowIntensity : 0;
     particles.forEach(p => {
         const twinkleAlpha = Math.sin(gameTime * 5 + p.twinkle) * 0.3 + 0.7;
         ctx.globalAlpha = p.life * twinkleAlpha;
         ctx.fillStyle = p.color;
-        ctx.shadowColor = p.color;
-
         if (p.type === 'star') {
             drawStar(ctx, p.x, p.y, 4, p.size, p.size / 2);
         } else {
@@ -397,15 +398,24 @@ function draw() {
     });
     ctx.restore();
 
-    // Sterne
+    // Sterne (Glow via Fake-Radial-Gradient, kein shadowBlur!)
     ctx.save();
-    ctx.fillStyle = '#ffeb3b';
-    // shadowBlur einmalig für alle Sterne setzen
-    ctx.shadowBlur = 15 + (25 * nightFactor * window.VIBE_CONFIG.nightGlowIntensity);
-    ctx.shadowColor = 'white';
+    const glowIntensity = nightFactor * window.VIBE_CONFIG.nightGlowIntensity;
     stars.forEach(star => {
         const twinkle = window.VIBE_CONFIG.starTwinkle ? Math.sin(Date.now() / 200 + star.x) * 0.2 + 1 : 1;
-        drawStar(ctx, star.x, star.y, 5, (star.size / 2) * twinkle, (star.size / 4) * twinkle);
+        const r = (star.size / 2) * twinkle;
+        // Glow: großer transparenter Gradient dahinter (nur nachts)
+        if (glowIntensity > 0.5) {
+            ctx.globalAlpha = Math.min(glowIntensity * 0.15, 0.6);
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(star.x, star.y, r * 3 * nightFactor, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        // Eigentlicher Stern
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#ffeb3b';
+        drawStar(ctx, star.x, star.y, 5, r, r / 2);
     });
     ctx.restore();
 
