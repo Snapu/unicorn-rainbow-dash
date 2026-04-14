@@ -407,7 +407,7 @@ function draw() {
                 ctx.arc(s.x * canvas.width, s.y * canvas.height, s.size, 0, Math.PI * 2);
                 ctx.fill();
             });
-            drawMoon(ctx, canvas.width - 100, 80, 40);
+            drawMoon(ctx, canvas.width - 200, 200, 40);
             ctx.restore();
         }
 
