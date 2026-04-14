@@ -235,18 +235,19 @@ function drawFakeGlow(ctx, x, y, radius, color, alpha) {
 function drawMoon(ctx, x, y, radius) {
     ctx.save();
     ctx.translate(x, y);
-    ctx.rotate(-0.4); // Den Mond etwas neigen für dynamischeren Look
+    ctx.rotate(-0.2); 
     
-    ctx.fillStyle = '#fdfdfd';
-    ctx.shadowBlur = 15;
-    ctx.shadowColor = 'white';
+    ctx.fillStyle = '#FFF9C4'; // Sanftes Mond-Gelb/Weiß
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = 'rgba(255, 250, 200, 0.5)';
 
     ctx.beginPath();
-    // 1. Der äußere Kreis (im Uhrzeigersinn)
-    ctx.arc(0, 0, radius, 0, Math.PI * 2, false);
-    // 2. Der innere Kreis zum "Ausstanzen" (gegen den Uhrzeigersinn)
-    // Versatz nach rechts (radius * 0.4) und leicht veränderter Radius für die Sichelform
-    ctx.arc(radius * 0.5, 0, radius * 0.9, 0, Math.PI * 2, true);
+    // Äußere Kurve (Halbkreis)
+    ctx.arc(0, 0, radius, Math.PI * 0.5, Math.PI * 1.5);
+    
+    // Innere Kurve (Bezier für die Sichel-Form)
+    // Wir ziehen die Kurve von der oberen Spitze zurück zur unteren
+    ctx.bezierCurveTo(radius * 0.8, -radius, radius * 0.8, radius, 0, radius);
     
     ctx.fill();
     ctx.restore();
