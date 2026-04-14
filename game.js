@@ -383,9 +383,7 @@ function draw() {
         }
     }
 
-    // Regenbogen-Schweif ('lighter' Blending = GPU-beschleunigte Glow-Simulation)
-    ctx.save();
-    ctx.globalCompositeOperation = 'lighter';
+    // Regenbogen-Schweif (Standard Blending ohne Glow)
     particles.forEach(p => {
         const twinkleAlpha = Math.sin(gameTime * 5 + p.twinkle) * 0.3 + 0.7;
         ctx.globalAlpha = p.life * twinkleAlpha;
@@ -398,28 +396,16 @@ function draw() {
             ctx.fill();
         }
     });
-    ctx.restore();
+    ctx.globalAlpha = 1;
 
-    // Sterne (Glow via Fake-Radial-Gradient, kein shadowBlur!)
-    ctx.save();
-    const glowIntensity = nightFactor * window.VIBE_CONFIG.nightGlowIntensity;
+    // Sterne (Ohne Halo/Glow)
     stars.forEach(star => {
         const twinkle = window.VIBE_CONFIG.starTwinkle ? Math.sin(Date.now() / 200 + star.x) * 0.2 + 1 : 1;
         const r = (star.size / 2) * twinkle;
-        // Glow: großer transparenter Gradient dahinter (nur nachts)
-        if (glowIntensity > 0.5) {
-            ctx.globalAlpha = Math.min(glowIntensity * 0.15, 0.6);
-            ctx.fillStyle = 'white';
-            ctx.beginPath();
-            ctx.arc(star.x, star.y, r * 3 * nightFactor, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        // Eigentlicher Stern
-        ctx.globalAlpha = 1;
         ctx.fillStyle = '#ffeb3b';
+        ctx.globalAlpha = 1;
         drawStar(ctx, star.x, star.y, 5, r, r / 2);
     });
-    ctx.restore();
 
     // 4. Hindernisse (Gewitterwolken)
     obstacles.forEach(obs => {
