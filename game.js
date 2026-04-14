@@ -235,23 +235,46 @@ function drawFakeGlow(ctx, x, y, radius, color, alpha) {
 function drawMoon(ctx, x, y, radius) {
     ctx.save();
     ctx.translate(x, y);
-    ctx.rotate(-0.5); // Klassische Mond-Neigung
+    ctx.rotate(-0.35); 
     
-    ctx.fillStyle = '#FFF9C4'; 
-    ctx.shadowBlur = 20;
-    ctx.shadowColor = 'rgba(255, 250, 200, 0.4)';
-
+    // 1. Sanfte Aura (Leuchten im Nebel)
+    const aura = ctx.createRadialGradient(0, 0, 0, 0, 0, radius * 1.6);
+    aura.addColorStop(0, 'rgba(255, 250, 200, 0.25)');
+    aura.addColorStop(1, 'rgba(255, 250, 200, 0)');
+    ctx.fillStyle = aura;
     ctx.beginPath();
-    // Wir starten an der oberen Spitze
-    ctx.moveTo(0, -radius);
-    
-    // Äußere Kurve (Rücken des Mondes)
-    ctx.bezierCurveTo(radius * 1.2, -radius, radius * 1.2, radius, 0, radius);
-    
-    // Innere Kurve (Bauch des Mondes)
-    ctx.bezierCurveTo(radius * 0.6, radius, radius * 0.6, -radius, 0, -radius);
-    
+    ctx.arc(0, 0, radius * 1.6, 0, Math.PI * 2);
     ctx.fill();
+
+    // 2. Der Aquarell-Mond (Zwei Schichten für Tiefe)
+    for (let layer = 0; layer < 2; layer++) {
+        // Erste Schicht etwas gelblicher, zweite weißer
+        ctx.fillStyle = layer === 0 ? '#FFF9C4' : 'rgba(255, 255, 255, 0.4)';
+        const r = layer === 0 ? radius : radius * 0.94;
+        
+        ctx.beginPath();
+        ctx.moveTo(0, -r);
+        // Außen-Kurve (etwas bauchiger für den Märchen-Look)
+        ctx.bezierCurveTo(r * 1.25, -r, r * 1.25, r, 0, r);
+        // Innen-Kurve (die eigentliche Sichel-Einbuchtung)
+        ctx.bezierCurveTo(r * 0.55, r, r * 0.55, -r, 0, -r);
+        ctx.fill();
+    }
+
+    // 3. Dezente Krater-Struktur (nur ganz leicht angedeutet)
+    ctx.globalAlpha = 0.08;
+    ctx.fillStyle = '#D4C491';
+    const craterPoints = [
+        {x: -radius * 0.2, y: -radius * 0.1, r: radius * 0.15},
+        {x: -radius * 0.1, y: radius * 0.3, r: radius * 0.1},
+        {x: 0, y: -radius * 0.4, r: radius * 0.08}
+    ];
+    craterPoints.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
     ctx.restore();
 }
 
