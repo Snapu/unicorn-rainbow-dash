@@ -11,6 +11,10 @@ const AudioEngine = {
         if (!this.audioCtx) {
             this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
+        // Wichtig: AudioContext nach Tab-Wechsel wieder aufwecken
+        if (this.audioCtx.state === 'suspended') {
+            this.audioCtx.resume();
+        }
     },
 
     // Ein glitzerndes "Pling" für die Sterne
@@ -83,20 +87,22 @@ const AudioEngine = {
 
     // --- MUSIK ENGINE ---
     musicInterval: null,
+    isPlaying: false,
     isTurbo: false,
 
     // Pentatonische Skala für magischen Sound (C4–C5)
     notes: [261.63, 293.66, 329.63, 392.00, 440.00, 523.25],
 
     startMusic() {
-        if (!window.VIBE_CONFIG.musicEnabled || this.musicInterval) return;
+        if (!window.VIBE_CONFIG.musicEnabled || this.isPlaying) return;
         this.init();
+        this.isPlaying = true;
 
         const playTick = () => {
+            if (!this.isPlaying) return; // Race Condition Guard
             const freq = this.notes[Math.floor(Math.random() * this.notes.length)];
             this.playMagicalNote(freq);
 
-            // Dynamisches Tempo: Im Turbo schneller!
             const interval = this.isTurbo ? 200 : 500;
             this.musicInterval = setTimeout(playTick, interval);
         };
@@ -144,6 +150,7 @@ const AudioEngine = {
     },
 
     stopMusic() {
+        this.isPlaying = false;
         if (this.musicInterval) {
             clearTimeout(this.musicInterval);
             this.musicInterval = null;
