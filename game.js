@@ -236,29 +236,29 @@ function drawCloud(ctx, x, y, width, height, alpha, nightFactor) {
     ctx.save();
     ctx.translate(x, y);
     
-    // Einfache, harmonische Farbe (Nachts etwas dunkler)
-    const baseVal = Math.floor(70 - 30 * nightFactor);
-    const color = `rgba(${baseVal}, ${baseVal}, ${baseVal + 20}, ${alpha})`;
+    // Kräftigere Farben für bessere Sichtbarkeit (Nachts dunkler)
+    const baseVal = Math.floor(80 - 40 * nightFactor);
+    const cloudAlpha = alpha * 0.9; 
     
-    // Weicher Schatten für den Aquarell-Rand-Effekt
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = 'rgba(0,0,0,0.2)';
-    ctx.fillStyle = color;
-
-    // Eine einfache Form aus 4 überlappenden Kreisen
     const circles = [
-        {x: 0, y: 0, r: height * 0.5},
-        {x: -width * 0.25, y: 0, r: height * 0.4},
-        {x: width * 0.25, y: 0, r: height * 0.4},
-        {x: 0, y: -height * 0.2, r: height * 0.35}
+        {x: 0, y: 0, r: height * 0.55},
+        {x: -width * 0.25, y: 0, r: height * 0.45},
+        {x: width * 0.25, y: 0, r: height * 0.45},
+        {x: 0, y: -height * 0.2, r: height * 0.4}
     ];
 
-    ctx.beginPath();
     circles.forEach(c => {
-        ctx.moveTo(c.x + c.r, c.y);
+        const grad = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.r);
+        // Solider Kern, weicher Rand
+        grad.addColorStop(0, `rgba(${baseVal}, ${baseVal + 10}, ${baseVal + 30}, ${cloudAlpha})`);
+        grad.addColorStop(0.7, `rgba(${baseVal}, ${baseVal + 10}, ${baseVal + 30}, ${cloudAlpha * 0.6})`);
+        grad.addColorStop(1, `rgba(${baseVal}, ${baseVal + 10}, ${baseVal + 30}, 0)`);
+        
+        ctx.fillStyle = grad;
+        ctx.beginPath();
         ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+        ctx.fill();
     });
-    ctx.fill();
     
     ctx.restore();
 }
