@@ -235,20 +235,21 @@ function drawFakeGlow(ctx, x, y, radius, color, alpha) {
 function drawMoon(ctx, x, y, radius) {
     ctx.save();
     ctx.translate(x, y);
-    ctx.rotate(-0.3); // Schöne Schräglage
+    ctx.rotate(-0.5); // Klassische Mond-Neigung
     
     ctx.fillStyle = '#FFF9C4'; 
-    ctx.shadowBlur = 25;
-    ctx.shadowColor = 'rgba(255, 250, 200, 0.5)';
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = 'rgba(255, 250, 200, 0.4)';
 
     ctx.beginPath();
-    // 1. Äußerer Bogen (von oben nach unten)
-    // Startet oben (1.5 PI) und geht bis unten (0.5 PI)
-    ctx.arc(0, 0, radius, 1.5 * Math.PI, 0.5 * Math.PI, true);
+    // Wir starten an der oberen Spitze
+    ctx.moveTo(0, -radius);
     
-    // 2. Innere Kurve zurück zum Startpunkt
-    // Die Kurve zieht sich in die Mitte, um die Sichel zu bilden
-    ctx.quadraticCurveTo(radius * 0.7, 0, 0, -radius);
+    // Äußere Kurve (Rücken des Mondes)
+    ctx.bezierCurveTo(radius * 1.2, -radius, radius * 1.2, radius, 0, radius);
+    
+    // Innere Kurve (Bauch des Mondes)
+    ctx.bezierCurveTo(radius * 0.6, radius, radius * 0.6, -radius, 0, -radius);
     
     ctx.fill();
     ctx.restore();
@@ -413,7 +414,7 @@ function draw() {
                 ctx.arc(s.x * canvas.width, s.y * canvas.height, s.size, 0, Math.PI * 2);
                 ctx.fill();
             });
-            drawMoon(ctx, canvas.width - 200, 200, 40);
+            drawMoon(ctx, canvas.width - 200, 150, 50);
             ctx.restore();
         }
 
