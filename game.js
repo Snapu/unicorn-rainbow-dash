@@ -236,9 +236,9 @@ function drawCloud(ctx, x, y, width, height, alpha, nightFactor) {
     ctx.save();
     ctx.translate(x, y);
     
-    // Kräftigere Farben für bessere Sichtbarkeit (Nachts dunkler)
-    const baseVal = Math.floor(80 - 40 * nightFactor);
-    const cloudAlpha = alpha * 0.9; 
+    // Solide, kräftige Farben (Nachts dunkler)
+    const baseVal = Math.floor(60 - 30 * nightFactor);
+    const cloudAlpha = alpha; // Volle Deckkraft nutzen
     
     const circles = [
         {x: 0, y: 0, r: height * 0.55},
@@ -249,9 +249,9 @@ function drawCloud(ctx, x, y, width, height, alpha, nightFactor) {
 
     circles.forEach(c => {
         const grad = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.r);
-        // Solider Kern, weicher Rand
+        // Mehr "Masse" im Zentrum, weniger weiche Kanten
         grad.addColorStop(0, `rgba(${baseVal}, ${baseVal + 10}, ${baseVal + 30}, ${cloudAlpha})`);
-        grad.addColorStop(0.7, `rgba(${baseVal}, ${baseVal + 10}, ${baseVal + 30}, ${cloudAlpha * 0.6})`);
+        grad.addColorStop(0.85, `rgba(${baseVal}, ${baseVal + 10}, ${baseVal + 30}, ${cloudAlpha * 0.8})`);
         grad.addColorStop(1, `rgba(${baseVal}, ${baseVal + 10}, ${baseVal + 30}, 0)`);
         
         ctx.fillStyle = grad;
