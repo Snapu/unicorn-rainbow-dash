@@ -379,19 +379,16 @@ function draw() {
     // Regenbogen-Schweif (Additive Blending = Teilchen leuchten zusammen)
     ctx.save();
     ctx.globalCompositeOperation = 'lighter';
+    // shadowBlur einmalig vor der Schleife setzen (statt für jeden Partikel!)
+    ctx.shadowBlur = nightFactor > 0.2 ? 20 * nightFactor * window.VIBE_CONFIG.nightGlowIntensity : 0;
     particles.forEach(p => {
         const twinkleAlpha = Math.sin(gameTime * 5 + p.twinkle) * 0.3 + 0.7;
         ctx.globalAlpha = p.life * twinkleAlpha;
         ctx.fillStyle = p.color;
-        
-        // Nacht-Glow Effekt (moderater)
-        if (nightFactor > 0.2) {
-            ctx.shadowBlur = 20 * nightFactor * window.VIBE_CONFIG.nightGlowIntensity;
-            ctx.shadowColor = p.color;
-        }
-        
+        ctx.shadowColor = p.color;
+
         if (p.type === 'star') {
-            drawStar(ctx, p.x, p.y, 4, p.size, p.size/2);
+            drawStar(ctx, p.x, p.y, 4, p.size, p.size / 2);
         } else {
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -399,26 +396,18 @@ function draw() {
         }
     });
     ctx.restore();
-    ctx.shadowBlur = 0;
 
-    // 3. Sterne
+    // Sterne
+    ctx.save();
+    ctx.fillStyle = '#ffeb3b';
+    // shadowBlur einmalig für alle Sterne setzen
+    ctx.shadowBlur = 15 + (25 * nightFactor * window.VIBE_CONFIG.nightGlowIntensity);
+    ctx.shadowColor = 'white';
     stars.forEach(star => {
-        ctx.save();
-        ctx.fillStyle = '#ffeb3b';
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = 'white';
-        
-        // Zeichne einen echten Stern mit Twinkle-Effekt
         const twinkle = window.VIBE_CONFIG.starTwinkle ? Math.sin(Date.now() / 200 + star.x) * 0.2 + 1 : 1;
-        
-        // Nacht-Glow für Sterne (moderater)
-        ctx.shadowBlur = 15 + (25 * nightFactor * window.VIBE_CONFIG.nightGlowIntensity);
-        ctx.shadowColor = 'white';
-        
-        drawStar(ctx, star.x, star.y, 5, (star.size/2) * twinkle, (star.size/4) * twinkle);
-        
-        ctx.restore();
+        drawStar(ctx, star.x, star.y, 5, (star.size / 2) * twinkle, (star.size / 4) * twinkle);
     });
+    ctx.restore();
 
     // 4. Hindernisse (Gewitterwolken)
     obstacles.forEach(obs => {
