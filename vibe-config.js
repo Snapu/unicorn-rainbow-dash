@@ -41,10 +41,10 @@ window.VIBE_CONFIG = {
     ],
 
     // Glitzer-Faktor: Wie viele Funkel-Teilchen? (1–15)
-    sparkleFactor: 8,
+    sparkleFactor: 3,
 
     // Regenbogen-Länge: Wie lange bleiben Teilchen sichtbar? (0.5–2.0)
-    particleLife: 1.2,
+    particleLife: 0.8,
 
     // Regenbogen-Dicke: Wie groß sind die Glitzer-Teilchen? (5–15)
     particleSize: 10,
