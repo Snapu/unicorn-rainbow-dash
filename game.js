@@ -365,19 +365,19 @@ function draw() {
     // --- TAG-NACHT-BERECHNUNG ---
     const nightFactor = (Math.sin(gameTime) + 1) / 2;
     
-    // Nacht-Overlay (vor leuchtenden Objekten, damit Glow sichtbar bleibt)
+    // Nacht-Overlay (günstiges source-over statt teures 'multiply')
     if (nightFactor > 0.05) {
-        ctx.save();
-        ctx.globalCompositeOperation = 'multiply';
-        ctx.fillStyle = `rgba(30, 30, 100, ${nightFactor * 0.7})`; 
+        ctx.globalAlpha = nightFactor * 0.65;
+        ctx.fillStyle = 'rgb(20, 20, 80)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.restore();
-        
+        ctx.globalAlpha = 1;
+
+        // Dämmerungs-Rötung
         if (nightFactor > 0.2 && nightFactor < 0.5) {
-            ctx.save();
-            ctx.fillStyle = `rgba(255, 100, 0, ${(0.5 - nightFactor) * 0.4})`;
+            ctx.globalAlpha = (0.5 - nightFactor) * 0.35;
+            ctx.fillStyle = 'rgb(255, 100, 0)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.restore();
+            ctx.globalAlpha = 1;
         }
     }
 
