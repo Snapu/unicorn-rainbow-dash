@@ -44,8 +44,8 @@ let turboTimer = 0;
 const staticStars = Array.from({ length: 50 }, () => ({
     x: Math.random(),
     y: Math.random() * 0.6, // Nur im oberen Bereich
-    size: 0.3 + Math.random() * 1.2,
-    opacity: 0.1 + Math.random() * 0.2
+    size: 0.5 + Math.random() * 1.5,
+    opacity: 0.3 + Math.random() * 0.5
 }));
 
 // Initialisierung
@@ -498,13 +498,10 @@ function draw() {
     });
     ctx.globalAlpha = 1;
 
-    // Sterne (Ohne Halo/Glow)
     stars.forEach(star => {
         const twinkle = window.VIBE_CONFIG.starTwinkle ? Math.sin(Date.now() / 200 + star.x) * 0.2 + 1 : 1;
         const r = (star.size / 2) * twinkle;
-        ctx.fillStyle = 'rgba(255, 250, 210, 0.9)'; // Cremiger, deckender
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = 'white';
+        ctx.fillStyle = '#ffeb3b';
         ctx.globalAlpha = 1;
         drawStar(ctx, star.x, star.y, 5, r, r / 2);
     });
