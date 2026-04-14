@@ -527,24 +527,12 @@ function draw() {
         );
     }
     ctx.restore();
-
-    // FPS-Zähler (Debug-Anzeige, oben rechts)
-    ctx.save();
-    ctx.fillStyle = 'rgba(0,0,0,0.45)';
-    ctx.fillRect(canvas.width - 80, 6, 74, 24);
-    ctx.fillStyle = currentFps < 40 ? '#ff4444' : 'white';
-    ctx.font = 'bold 14px monospace';
-    ctx.fillText(`${Math.round(currentFps)} FPS`, canvas.width - 72, 23);
-    ctx.restore();
 }
 
 let lastFrameTime = performance.now();
-let currentFps = 60;
 
 function loop() {
-    const now = performance.now();
-    currentFps = currentFps * 0.9 + (1000 / (now - lastFrameTime)) * 0.1;
-    lastFrameTime = now;
+    lastFrameTime = performance.now();
     update();
     draw();
     requestAnimationFrame(loop);
