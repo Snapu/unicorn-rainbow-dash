@@ -31,13 +31,14 @@ window.VIBE_CONFIG = {
     // --- REGENBOGEN-SCHWEIF ---
     // Regenbogen-Farben: Sucht euch eure Lieblingsfarben aus!
     rainbowColors: [
-        '#FF0000', // Rot
-        '#FF7F00', // Orange
-        '#FFFF00', // Gelb
-        '#00FF00', // Grün
-        '#0000FF', // Blau
-        '#4B0082', // Indigo
-        '#8B00FF'  // Violett
+        '#FFADAD', // Soft Coral
+        '#FFD6A5', // Peach
+        '#FDFFB6', // Soft Yellow
+        '#CAFFBF', // Mint
+        '#9BF6FF', // Sky Blue
+        '#A0C4FF', // Periwinkle
+        '#BDB2FF', // Lavender
+        '#FFC6FF'  // Rose Pink
     ],
 
     // Glitzer-Faktor: Wie viele Funkel-Teilchen? (1–15)
