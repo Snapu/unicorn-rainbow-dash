@@ -4,7 +4,7 @@ Ein magisches Einhorn-Flugspiel, gebaut mit Vibe-Coding! 🌈✨
 
 ## Spielen
 
-👉 **[Jetzt spielen](https://sabahattingiritli.github.io/ELIZ/)**
+👉 **[Jetzt spielen](https://snapu.github.io/unicorn-rainbow-dash/)**
 
 Oder lokal: Öffne einfach `index.html` in einem Browser.
 
