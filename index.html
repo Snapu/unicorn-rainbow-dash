@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Unicorn Rainbow Dash 🦄✨</title>
+    <meta name="description" content="Ein magisches Einhorn-Flugspiel mit Regenbogen-Schweif, Diamanten-Turbo und einem dynamischen Tag-Nacht-Zyklus.">
+    <meta name="theme-color" content="#ff75c3">
+
+    <!-- Open Graph (für schöne Vorschau beim Teilen) -->
+    <meta property="og:title" content="Unicorn Rainbow Dash 🦄✨">
+    <meta property="og:description" content="Fliege mit deinem Einhorn durch einen magischen Wald, sammle Sterne und aktiviere den Regenbogen-Turbo!">
+    <meta property="og:type" content="website">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- UI: Punkte und Turbo-Anzeige -->
+        <div id="ui-layer">
+            <div class="stat-card">
+                <span class="stat-label">Magie-Punkte</span>
+                <span id="score" class="stat-value">0</span>
+            </div>
+            <div class="stat-card" id="turbo-card" style="display: none;">
+                <span class="stat-label">RAINBOW DASH TURBO! 💎</span>
+                <div id="turbo-bar-bg"><div id="turbo-bar"></div></div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Beste Runde</span>
+                <span id="highscore" class="stat-value">0</span>
+            </div>
+        </div>
+
+        <!-- Startbildschirm / Game Over -->
+        <div id="start-screen">
+            <div class="modal">
+                <h1>Unicorn Fly 🦄</h1>
+                <p>Klicke oder tippe, um zu fliegen!<br>Sammle Sterne ⭐ und finde Diamanten 💎 für den Turbo-Boost!</p>
+                <button id="start-button">LOS GEHT'S!</button>
+            </div>
+        </div>
+
+        <!-- Hinweis zum Drehen des Handys -->
+        <div id="rotate-overlay">
+            <div class="rotate-content">
+                <div class="rotate-icon">🔄</div>
+                <p>Bitte drehe dein Handy in den <b>Querformat-Modus</b>,<br>damit das Einhorn genug Platz zum Fliegen hat!</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="vibe-config.js"></script>
+    <script src="audio.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
