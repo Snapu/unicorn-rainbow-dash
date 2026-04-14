@@ -237,17 +237,16 @@ function drawMoon(ctx, x, y, radius) {
     ctx.translate(x, y);
     ctx.rotate(-0.2); 
     
-    ctx.fillStyle = '#FFF9C4'; // Sanftes Mond-Gelb/Weiß
+    ctx.fillStyle = '#FFF9C4'; 
     ctx.shadowBlur = 20;
-    ctx.shadowColor = 'rgba(255, 250, 200, 0.5)';
+    ctx.shadowColor = 'rgba(255, 250, 200, 0.4)';
 
     ctx.beginPath();
-    // Äußere Kurve (Halbkreis)
-    ctx.arc(0, 0, radius, Math.PI * 0.5, Math.PI * 1.5);
-    
-    // Innere Kurve (Bezier für die Sichel-Form)
-    // Wir ziehen die Kurve von der oberen Spitze zurück zur unteren
-    ctx.bezierCurveTo(radius * 0.8, -radius, radius * 0.8, radius, 0, radius);
+    // Der Haupt-Kreis
+    ctx.arc(0, 0, radius, 0, Math.PI * 2, false);
+    // Der "Ausschneide"-Kreis (identischer Radius, leicht versetzt)
+    // Wir nutzen 'true' für anticlockwise, um die Fläche abzuziehen
+    ctx.arc(radius * 0.4, 0, radius, 0, Math.PI * 2, true);
     
     ctx.fill();
     ctx.restore();
